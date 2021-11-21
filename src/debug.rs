@@ -1,4 +1,4 @@
-use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT};
+use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE};
 use crate::value::print_value;
 
 pub fn disassemble_chunk(chunk: &Chunk, name: String) {
@@ -11,9 +11,9 @@ pub fn disassemble_chunk(chunk: &Chunk, name: String) {
 }
 
 fn constant_instruction(name: String, chunk: &Chunk, offset: usize) -> usize {
-    let constant = chunk.code[offset + 1];
-    print!("{:16} {:4} '", name, constant);
-    print_value(chunk.constants[constant]);
+    let constant_idx = chunk.code[offset + 1];
+    print!("{:16} {:4} '", name, constant_idx);
+    print_value(chunk.constants[constant_idx]);
     print!("'\n");
     return offset + 2;
 }
@@ -23,7 +23,7 @@ fn simple_instruction(name: String, offset: usize) -> usize {
     return offset + 1;
 }
 
-fn disassemble_instruction(chunk: &Chunk, offset: usize) -> usize {
+pub fn disassemble_instruction(chunk: &Chunk, offset: usize) -> usize {
     print!("{:04} ", offset);
 
     if offset > 0 && chunk.lines[offset] == chunk.lines[offset - 1] {
@@ -39,6 +39,21 @@ fn disassemble_instruction(chunk: &Chunk, offset: usize) -> usize {
     }
     else if instruction == OP_CONSTANT {
         return constant_instruction("OP_CONSTANT".to_string(), chunk, offset);
+    }
+    else if instruction == OP_ADD {
+        return simple_instruction(String::from("OP_ADD"), offset);
+    }
+    else if instruction == OP_SUBTRACT {
+        return simple_instruction(String::from("OP_SUBTRACT"), offset);
+    }
+    else if instruction == OP_MULTIPLY {
+        return simple_instruction(String::from("OP_MULTIPLY"), offset);
+    }
+    else if instruction == OP_DIVIDE {
+        return simple_instruction(String::from("OP_DIVIDE"), offset);
+    }
+    else if instruction == OP_NEGATE {
+        return simple_instruction("OP_NEGATE".to_string(), offset);
     }
     println!("Unknown opcode {:?}", instruction);
     return offset + 1;

@@ -1,7 +1,12 @@
 use crate::value::Value;
 
-pub const OP_RETURN: usize = 0x00;
-pub const OP_CONSTANT: usize = 0x01;
+pub const OP_RETURN: usize = 1;
+pub const OP_CONSTANT: usize = 0;
+pub const OP_NEGATE: usize = 2;
+pub const OP_ADD: usize = 3;
+pub const OP_SUBTRACT: usize = 4;
+pub const OP_MULTIPLY: usize = 5;
+pub const OP_DIVIDE: usize = 6;
 
 pub struct Chunk {
     pub code: Vec<usize>,
@@ -9,7 +14,7 @@ pub struct Chunk {
     pub constants: Vec<Value>,
 }
 
-pub fn init_chunk() -> Chunk {
+pub const fn init_chunk() -> Chunk {
     return Chunk {
         code: Vec::new(),
         lines: Vec::new(),
