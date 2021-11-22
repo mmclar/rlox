@@ -1,5 +1,6 @@
 use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE};
 use crate::value::print_value;
+// use crate::value::print_value;
 
 pub fn disassemble_chunk(chunk: &Chunk, name: String) {
     println!("== {} == ", name);

@@ -1,11 +1,11 @@
-use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY};
+use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE};
 use crate::value::{print_value, Value};
 use crate::debug::disassemble_instruction;
-use crate::OP_DIVIDE;
+use crate::compiler::compile;
 
 pub const DEBUG_TRACE_EXECUTION: bool = true;
 
-type InterpretResult = usize;
+pub(crate) type InterpretResult = usize;
 pub const INTERPRET_OK: InterpretResult = 0;
 // pub const INTERPRET_COMPILE_ERROR: InterpretResult = 1;
 pub const INTERPRET_RUNTIME_ERROR: InterpretResult = 2;
@@ -15,16 +15,11 @@ pub struct VM {
     stack: Vec<Value>,
 }
 
-pub fn interpret(chunk: Chunk) -> InterpretResult {
-    if DEBUG_TRACE_EXECUTION {
-        println!("\n== Interpreting ==");
-    }
-    let vm = VM {
-        chunk: chunk,
-        stack: Vec::new(),
-    };
-    return run(vm);
+pub fn interpret(source: String) -> InterpretResult {
+    compile(source);
+    INTERPRET_OK
 }
+
 // , l: &dyn Fn(Value, Value) -> Value
 fn bin_op(mut stack: Vec<Value>, op_fn: &dyn Fn(Value, Value) -> Value) -> (Vec<Value>, InterpretResult) {
     match stack.pop() {

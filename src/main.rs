@@ -1,34 +1,47 @@
-use crate::chunk::{Chunk, init_chunk, write_chunk, add_constant, OP_CONSTANT, OP_RETURN, OP_NEGATE, OP_ADD, OP_DIVIDE};
+use std::{env, io};
+use std::io::Write;
+use std::fs;
+
+use crate::chunk::{OP_DIVIDE, OP_NEGATE, OP_RETURN, write_chunk};
 use crate::debug::disassemble_chunk;
 use crate::vm::interpret;
+use crate::vm::InterpretResult;
 
 mod value;
 mod chunk;
 mod debug;
 mod vm;
+mod compiler;
+mod scanner;
 
 fn main() {
-    let mut chunk: Chunk = init_chunk();
+    let args: Vec<String> = env::args().collect();
+    let arg_len = args.len();
+    if arg_len == 1 {
+        repl();
+    }
+    else if arg_len == 2 {
+        run_file(&args[1]);
+    }
+    else {
+        panic!("Usage: rlox [path]\n");
+    }
+}
 
-    let mut constant = add_constant(&mut chunk, 1.2);
-    write_chunk(&mut chunk, OP_CONSTANT, 123);
-    write_chunk(&mut chunk, constant, 123);
+fn repl() {
+    while true {
+        print!("> ");
+        io::stdout().flush().unwrap();
+        let mut line = String::new();
+        io::stdin().read_line(&mut line);
+        print!("{}", line);
+    }
+}
 
-    constant = add_constant(&mut chunk, 3.4);
-    write_chunk(&mut chunk, OP_CONSTANT, 123);
-    write_chunk(&mut chunk, constant, 123);
+fn run_file(path: &String) {
+    let source = fs::read_to_string(path).expect("Something went wrong reading the file");
+    let result: InterpretResult  = interpret(source);
 
-    write_chunk(&mut chunk, OP_ADD, 123);
-
-    constant = add_constant(&mut chunk, 5.6);
-    write_chunk(&mut chunk, OP_CONSTANT, 123);
-    write_chunk(&mut chunk, constant, 123);
-
-
-    write_chunk(&mut chunk, OP_DIVIDE, 123);
-    write_chunk(&mut chunk, OP_NEGATE, 123);
-
-    write_chunk(&mut chunk, OP_RETURN, 123);
-    disassemble_chunk(&chunk, String::from("test chunk"));
-    interpret(chunk);
+    // if (result == INTERPRET_COMPILE_ERROR) exit(65);
+    // if (result == INTERPRET_RUNTIME_ERROR) exit(70);
 }
