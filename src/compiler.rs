@@ -1,5 +1,4 @@
 use crate::scanner::{Scanner, TokenType};
-use crate::scanner::TokenType::TokenAnd;
 
 pub fn compile(source: String) {
     let mut scanner = Scanner::new(source);
@@ -14,7 +13,7 @@ pub fn compile(source: String) {
             println!("  | ")
         }
         println!("{:?} {} {}", token.token_type, token.length, token.start);
-        if token.token_type == TokenType::TokenEOF {
+        if token.token_type == TokenType::EOF {
             break;
         }
     }
