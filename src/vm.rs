@@ -1,13 +1,13 @@
-use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE};
+use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE, init_chunk};
+use crate::compiler::Compiler;
 use crate::value::{print_value, Value};
 use crate::debug::disassemble_instruction;
-use crate::compiler::compile;
 
 pub const DEBUG_TRACE_EXECUTION: bool = true;
 
 pub(crate) type InterpretResult = usize;
 pub const INTERPRET_OK: InterpretResult = 0;
-// pub const INTERPRET_COMPILE_ERROR: InterpretResult = 1;
+pub const INTERPRET_COMPILE_ERROR: InterpretResult = 1;
 pub const INTERPRET_RUNTIME_ERROR: InterpretResult = 2;
 
 pub struct VM {
@@ -16,8 +16,14 @@ pub struct VM {
 }
 
 pub fn interpret(source: String) -> InterpretResult {
-    compile(source);
-    INTERPRET_OK
+    let chunk = init_chunk();
+    let mut compiler = Compiler::new(source, chunk);
+    if !compiler.compile() { return INTERPRET_COMPILE_ERROR; }
+    let vm = VM {
+        chunk: compiler.compiling_chunk,
+        stack: Vec::new(),
+    };
+    return run(vm)
 }
 
 // , l: &dyn Fn(Value, Value) -> Value
@@ -56,7 +62,7 @@ fn run(vm: VM) -> InterpretResult {
         }
 
         // TODO: Not idiomatic way of skipping if no match
-        let none = |a: Value, b: Value| 0.0;
+        let none = |_a: Value, _b: Value| 0.0;
         let op_fn = match instruction {
             OP_ADD => |a, b| a + b,
             OP_SUBTRACT => |a, b| a - b,

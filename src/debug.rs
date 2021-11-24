@@ -2,14 +2,14 @@ use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT
 use crate::value::print_value;
 // use crate::value::print_value;
 
-pub fn disassemble_chunk(chunk: &Chunk, name: String) {
-    println!("== {} == ", name);
-
-    let mut offset = 0;
-    while offset < chunk.code.len() {
-        offset = disassemble_instruction(chunk, offset);
-    }
-}
+// pub fn disassemble_chunk(chunk: &Chunk, name: String) {
+//     println!("== {} == ", name);
+//
+//     let mut offset = 0;
+//     while offset < chunk.code.len() {
+//         offset = disassemble_instruction(chunk, offset);
+//     }
+// }
 
 fn constant_instruction(name: String, chunk: &Chunk, offset: usize) -> usize {
     let constant_idx = chunk.code[offset + 1];

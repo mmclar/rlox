@@ -2,8 +2,8 @@ use std::{env, io};
 use std::io::Write;
 use std::fs;
 
-use crate::chunk::{OP_DIVIDE, OP_NEGATE, OP_RETURN, write_chunk};
-use crate::debug::disassemble_chunk;
+// use crate::chunk::{OP_DIVIDE, OP_NEGATE, OP_RETURN, write_chunk};
+// use crate::debug::disassemble_chunk;
 use crate::vm::interpret;
 use crate::vm::InterpretResult;
 
@@ -20,7 +20,7 @@ fn main() {
     if arg_len == 1 {
         repl();
     }
-    else if arg_len == 2 {
+    if arg_len == 2 {
         run_file(&args[1]);
     }
     else {
@@ -29,18 +29,20 @@ fn main() {
 }
 
 fn repl() {
-    while true {
+    loop {
         print!("> ");
         io::stdout().flush().unwrap();
         let mut line = String::new();
-        io::stdin().read_line(&mut line);
-        print!("{}", line);
+        match io::stdin().read_line(&mut line) {
+            Ok(_) => { print!("{}", line); }
+            Err(_) => {},
+        }
     }
 }
 
 fn run_file(path: &String) {
     let source = fs::read_to_string(path).expect("Something went wrong reading the file");
-    let result: InterpretResult  = interpret(source);
+    let _result: InterpretResult  = interpret(source);
 
     // if (result == INTERPRET_COMPILE_ERROR) exit(65);
     // if (result == INTERPRET_RUNTIME_ERROR) exit(70);

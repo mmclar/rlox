@@ -27,7 +27,7 @@ pub fn write_chunk(chunk: &mut Chunk, byte: usize, line: i32) {
     chunk.lines.push(line);
 }
 
-pub fn add_constant(chunk: &mut Chunk, value: Value) -> usize {
-    chunk.constants.push(value);
-    return chunk.constants.len() - 1;
-}
+// pub fn add_constant(chunk: &mut Chunk, value: Value) -> usize {
+//     chunk.constants.push(value);
+//     return chunk.constants.len() - 1;
+// }

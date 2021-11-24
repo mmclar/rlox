@@ -1,4 +1,4 @@
-use crate::value::Value;
+// use crate::value::Value;
 
 pub struct Scanner {
     source: Vec<char>,
@@ -71,17 +71,17 @@ impl Scanner {
             start: self.start,
             length: self.current - self.start,
             line: self.line,
-            message: "".to_string(),
+            // message: "".to_string(),
         }
     }
 
-    fn error_token(&mut self, message: String) -> Token {
+    fn error_token(&mut self, _message: String) -> Token {
         Token {
             token_type: TokenType::Error,
             start: 0,
             length: 0,
             line: self.line,
-            message: message,
+            // message: message,
         }
     }
 
@@ -189,7 +189,7 @@ impl Scanner {
         self.make_token(TokenType::String)
     }
 
-    fn advance(&mut self) -> &char {
+    pub fn advance(&mut self) -> &char {
         self.current = self.current + 1;
         self.get_char_at_idx(self.current - 1)
     }
@@ -218,17 +218,23 @@ impl Scanner {
         }
         false
     }
+
+    pub fn get_token_text(&self, token: Token) -> String {
+        let chars = &self.source[token.start..token.start + token.length];
+        chars.iter().collect()
+    }
 }
 
+#[derive(Copy, Clone)]
 pub struct Token {
     pub token_type: TokenType,
     pub start: usize,
     pub length: usize,
     pub line: i32,
-    pub message: String,
+    // pub message: str,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TokenType {
     // Single-character tokens.
     LeftParen, RightParen,
@@ -248,7 +254,7 @@ pub enum TokenType {
     Print, Return, Super, This,
     True, Var, While,
     // Util
-    Error, EOF
+    Error, EOF, Empty
 }
 
 fn cmp(a: &Vec<char>, a_start: usize, length: usize, b: String) -> bool {
