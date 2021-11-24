@@ -25,6 +25,8 @@ impl Scanner {
 
         let c = self.advance().clone();
 
+        if self.is_alpha(&c) { return self.identifier(); }
+
         if self.is_digit(&c) { return self.number(); }
 
         if self.match_next(&'=') {
@@ -103,6 +105,57 @@ impl Scanner {
                 _ => break
             }
         }
+    }
+
+    fn is_alpha(&self, c: &char) -> bool {
+        return match c {
+            'a'..='z' | 'A'..='Z' | '_' => true,
+            _ => false,
+        }
+    }
+
+    fn identifier(&mut self) -> Token {
+        while self.is_alpha(self.peek()) || self.is_digit(self.peek()) {
+            self.advance();
+        }
+        self.make_token(self.identifier_type())
+    }
+
+    fn identifier_type(&self) -> TokenType {
+        match self.get_char_at_idx(self.start) {
+            'a' => self.check_keyword(1, "nd".to_string(), TokenType::And),
+            'c' => self.check_keyword(1, "lass".to_string(), TokenType::Class),
+            'e' => self.check_keyword(1, "lse".to_string(), TokenType::Else),
+            'i' => self.check_keyword(1, "f".to_string(), TokenType::If),
+            'n' => self.check_keyword(1, "il".to_string(), TokenType::Nil),
+            'o' => self.check_keyword(1, "r".to_string(), TokenType::Or),
+            'p' => self.check_keyword(1, "rint".to_string(), TokenType::Print),
+            'r' => self.check_keyword(1, "eturn".to_string(), TokenType::Return),
+            's' => self.check_keyword(1, "uper".to_string(), TokenType::Super),
+            'v' => self.check_keyword(1, "ar".to_string(), TokenType::Var),
+            'w' => self.check_keyword(1, "hile".to_string(), TokenType::While),
+            'f' => match self.get_char_at_idx(self.start + 1) {
+                'a' => self.check_keyword(2, "lse".to_string(), TokenType::False),
+                'o' => self.check_keyword(2, "r".to_string(), TokenType::For),
+                'u' => self.check_keyword(2, "n".to_string(), TokenType::Fun),
+                _ => TokenType::Identifier,
+            },
+            't' => match self.get_char_at_idx(self.start + 1) {
+                'h' => self.check_keyword(2, "is".to_string(), TokenType::This),
+                'r' => self.check_keyword(2, "ue".to_string(), TokenType::True),
+                _ => TokenType::Identifier,
+            },
+            _ => TokenType::Identifier,
+        }
+    }
+
+    fn check_keyword(&self, start: usize, rest: String, token_type: TokenType ) -> TokenType {
+        let length = self.current - self.start - start;
+        let strings_match = cmp(&self.source, self.start + start, length, rest);
+        if strings_match {
+            return token_type;
+        }
+        TokenType::Identifier
     }
 
     fn is_digit(&self, c: &char) -> bool {
@@ -196,4 +249,15 @@ pub enum TokenType {
     True, Var, While,
     // Util
     Error, EOF
+}
+
+fn cmp(a: &Vec<char>, a_start: usize, length: usize, b: String) -> bool {
+    if b.len() != length { return false; }
+    let b_chars: Vec<char> = b.chars().collect();
+    for i in 0..length {
+        if a.get(i + a_start) != b_chars.get(i) {
+            return false;
+        }
+    }
+    true
 }
