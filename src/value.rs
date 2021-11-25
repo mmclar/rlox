@@ -24,21 +24,23 @@ impl fmt::Debug for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("Value")
             .field("value_type", &self.value_type)
-            // .field("data", as_string(self))
+            // .field("data", self)
             .finish()
     }
 }
 
-pub fn print_value(value: Value) {
-    print!("{}", as_string(&value));
+impl Value {
+    pub fn to_string(self) -> String {
+        match self.value_type {
+            ValueType::Bool => if as_bool(&self) { return "true".to_string(); } else { return "false".to_string(); },
+            ValueType::Nil => "nil".to_string(),
+            ValueType::Number => format!("{}", as_number(&self)),
+        }
+    }
 }
 
-pub fn as_string(value: &Value) -> String {
-    match value.value_type {
-        ValueType::Bool => if as_bool(value) { return "true".to_string(); } else { return "false".to_string(); },
-        ValueType::Nil => "nil".to_string(),
-        ValueType::Number => format!("{}", as_number(value)),
-    }
+pub fn print_value(value: Value) {
+    print!("{}", value.to_string());
 }
 
 pub fn as_number(value: &Value) -> f64 {
