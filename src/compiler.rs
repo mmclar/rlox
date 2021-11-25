@@ -1,6 +1,6 @@
 use crate::chunk::{add_constant, Chunk, OP_ADD, OP_CONSTANT, OP_DIVIDE, OP_MULTIPLY, OP_NEGATE, OP_RETURN, OP_SUBTRACT, write_chunk};
 use crate::scanner::{Scanner, Token, TokenType};
-use crate::value::Value;
+use crate::value::{number_val, Value};
 use crate::parser::{Parser, PREC_ASSIGNMENT, PREC_UNARY};
 
 pub struct Compiler {
@@ -88,8 +88,6 @@ impl Compiler {
         }
         prefix_rule(self);
 
-        let a = self.parser.get_rule(self.parser.previous.token_type);
-
         while precedence <= self.parser.get_rule(self.parser.current.token_type).precedence {
             self.advance();
             let infix_rule = self.parser.get_rule(self.parser.previous.token_type).infix;
@@ -146,8 +144,8 @@ impl Compiler {
     }
 
     pub fn number(&mut self) {
-        let value: f64 = self.scanner.get_token_text(self.parser.previous).parse().unwrap();
-        self.emit_constant(value);
+        let number: f64 = self.scanner.get_token_text(self.parser.previous).parse().unwrap();
+        self.emit_constant(number_val(number));
     }
 
     pub fn unary(&mut self) {

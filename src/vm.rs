@@ -1,6 +1,6 @@
 use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE, init_chunk};
 use crate::compiler::Compiler;
-use crate::value::{print_value, Value};
+use crate::value::{as_number, number_val, print_value, Value, ValueData, ValueType};
 use crate::debug::disassemble_instruction;
 
 pub const DEBUG_TRACE_EXECUTION: bool = true;
@@ -27,14 +27,14 @@ pub fn interpret(source: String) -> InterpretResult {
 }
 
 // , l: &dyn Fn(Value, Value) -> Value
-fn bin_op(mut stack: Vec<Value>, op_fn: &dyn Fn(Value, Value) -> Value) -> (Vec<Value>, InterpretResult) {
+fn bin_op(mut stack: Vec<Value>, op_fn: &dyn Fn(f64, f64) -> f64) -> (Vec<Value>, InterpretResult) {
     match stack.pop() {
         None => return (stack, INTERPRET_RUNTIME_ERROR),
         Some(b) => {
             match stack.pop() {
                 None => return (stack, INTERPRET_RUNTIME_ERROR),
                 Some(a) => {
-                    stack.push(op_fn(a, b));
+                    stack.push(number_val(op_fn(as_number(&a), as_number(&b))));
                 }
             }
         }
@@ -62,7 +62,7 @@ fn run(vm: VM) -> InterpretResult {
         }
 
         // TODO: Not idiomatic way of skipping if no match
-        let none = |_a: Value, _b: Value| 0.0;
+        let none = |_a: f64, _b: f64| 0.0;
         let op_fn = match instruction {
             OP_ADD => |a, b| a + b,
             OP_SUBTRACT => |a, b| a - b,
@@ -81,7 +81,7 @@ fn run(vm: VM) -> InterpretResult {
         else if instruction == OP_NEGATE {
             match stack.pop() {
                 None => return INTERPRET_RUNTIME_ERROR,
-                Some(value) => stack.push(-value),
+                Some(value) => stack.push(number_val(-as_number(&value))),
             }
         }
 
