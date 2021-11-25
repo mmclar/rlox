@@ -1,7 +1,7 @@
 use crate::chunk::{add_constant, Chunk, OP_ADD, OP_CONSTANT, OP_DIVIDE, OP_MULTIPLY, OP_NEGATE, OP_RETURN, OP_SUBTRACT, write_chunk};
 use crate::scanner::{Scanner, Token, TokenType};
 use crate::value::Value;
-use crate::parser::{next_precedence, Parser, Precedence};
+use crate::parser::{Parser, PREC_ASSIGNMENT, PREC_UNARY};
 
 pub struct Compiler {
     parser: Parser,
@@ -76,10 +76,10 @@ impl Compiler {
     }
 
     fn expression(&mut self) {
-        self.parse_precedence(&Precedence::Assignment);
+        self.parse_precedence(PREC_ASSIGNMENT);
     }
 
-    fn parse_precedence(&mut self, precedence: &Precedence) {
+    fn parse_precedence(&mut self, precedence: i32) {
         self.advance();
         let prefix_rule = self.parser.get_rule(self.parser.previous.token_type).prefix;
         if prefix_rule as usize == Compiler::nil as usize {
@@ -90,7 +90,7 @@ impl Compiler {
 
         let a = self.parser.get_rule(self.parser.previous.token_type);
 
-        while precedence <= &self.parser.get_rule(self.parser.current.token_type).precedence {
+        while precedence <= self.parser.get_rule(self.parser.current.token_type).precedence {
             self.advance();
             let infix_rule = self.parser.get_rule(self.parser.previous.token_type).infix;
             infix_rule(self);
@@ -112,7 +112,7 @@ impl Compiler {
     pub fn binary(&mut self) {
         let operator_type = self.parser.previous.token_type;
         let rule = self.parser.get_rule(operator_type);
-        self.parse_precedence(&next_precedence(&rule.precedence));
+        self.parse_precedence(rule.precedence + 1);
 
         match operator_type {
             TokenType::Plus => { self.emit_byte(OP_ADD); },
@@ -152,7 +152,7 @@ impl Compiler {
 
     pub fn unary(&mut self) {
         let operator_type = self.parser.previous.token_type;
-        self.parse_precedence(&Precedence::Unary);
+        self.parse_precedence(PREC_UNARY);
         match operator_type {
             TokenType::Minus => { self.emit_byte(OP_NEGATE); }
             _ => {},
