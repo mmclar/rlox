@@ -7,6 +7,13 @@ pub const OP_ADD: usize = 3;
 pub const OP_SUBTRACT: usize = 4;
 pub const OP_MULTIPLY: usize = 5;
 pub const OP_DIVIDE: usize = 6;
+pub const OP_NIL: usize = 7;
+pub const OP_TRUE: usize = 8;
+pub const OP_FALSE: usize = 9;
+pub const OP_NOT: usize = 10;
+pub const OP_EQUAL: usize = 11;
+pub const OP_GREATER: usize = 12;
+pub const OP_LESS: usize = 13;
 
 pub struct Chunk {
     pub code: Vec<usize>,

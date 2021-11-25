@@ -1,4 +1,4 @@
-use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE};
+use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE, OP_NIL, OP_TRUE, OP_FALSE, OP_NOT, OP_EQUAL, OP_GREATER, OP_LESS};
 use crate::value::print_value;
 // use crate::value::print_value;
 
@@ -40,6 +40,27 @@ pub fn disassemble_instruction(chunk: &Chunk, offset: usize) -> usize {
     }
     else if instruction == OP_CONSTANT {
         return constant_instruction("OP_CONSTANT".to_string(), chunk, offset);
+    }
+    else if instruction == OP_NIL {
+        return simple_instruction(String::from("OP_NIL"), offset);
+    }
+    else if instruction == OP_TRUE {
+        return simple_instruction(String::from("OP_TRUE"), offset);
+    }
+    else if instruction == OP_FALSE {
+        return simple_instruction(String::from("OP_FALSE"), offset);
+    }
+    else if instruction == OP_EQUAL {
+        return simple_instruction(String::from("OP_EQUAL"), offset);
+    }
+    else if instruction == OP_GREATER {
+        return simple_instruction(String::from("OP_GREATER"), offset);
+    }
+    else if instruction == OP_LESS {
+        return simple_instruction(String::from("OP_LESS"), offset);
+    }
+    else if instruction == OP_NOT {
+        return simple_instruction(String::from("OP_NOT"), offset);
     }
     else if instruction == OP_ADD {
         return simple_instruction(String::from("OP_ADD"), offset);

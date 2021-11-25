@@ -1,4 +1,4 @@
-use crate::chunk::{add_constant, Chunk, OP_ADD, OP_CONSTANT, OP_DIVIDE, OP_MULTIPLY, OP_NEGATE, OP_RETURN, OP_SUBTRACT, write_chunk};
+use crate::chunk::{add_constant, Chunk, OP_ADD, OP_CONSTANT, OP_DIVIDE, OP_EQUAL, OP_FALSE, OP_GREATER, OP_LESS, OP_MULTIPLY, OP_NEGATE, OP_NIL, OP_NOT, OP_RETURN, OP_SUBTRACT, OP_TRUE, write_chunk};
 use crate::scanner::{Scanner, Token, TokenType};
 use crate::value::{number_val, Value};
 use crate::parser::{Parser, PREC_ASSIGNMENT, PREC_UNARY};
@@ -113,6 +113,12 @@ impl Compiler {
         self.parse_precedence(rule.precedence + 1);
 
         match operator_type {
+            TokenType::BangEqual => { self.emit_bytes(OP_EQUAL, OP_NOT); },
+            TokenType::EqualEqual => { self.emit_byte(OP_EQUAL); },
+            TokenType::Greater => { self.emit_byte(OP_GREATER); },
+            TokenType::GreaterEqual => { self.emit_bytes(OP_LESS, OP_NOT); },
+            TokenType::Less => { self.emit_byte(OP_LESS); },
+            TokenType::LessEqual => { self.emit_bytes(OP_GREATER, OP_NOT); },
             TokenType::Plus => { self.emit_byte(OP_ADD); },
             TokenType::Minus => { self.emit_byte(OP_SUBTRACT); },
             TokenType::Star => { self.emit_byte(OP_MULTIPLY); },
@@ -153,6 +159,16 @@ impl Compiler {
         self.parse_precedence(PREC_UNARY);
         match operator_type {
             TokenType::Minus => { self.emit_byte(OP_NEGATE); }
+            TokenType::Bang => { self.emit_byte(OP_NOT); }
+            _ => {},
+        }
+    }
+
+    pub fn literal(&mut self) {
+        match self.parser.previous.token_type {
+            TokenType::True => { self.emit_byte(OP_TRUE); },
+            TokenType::False => { self.emit_byte(OP_FALSE); },
+            TokenType::Nil => { self.emit_byte(OP_NIL); },
             _ => {},
         }
     }

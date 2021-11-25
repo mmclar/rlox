@@ -1,6 +1,7 @@
 use std::fmt;
+use crate::value::ValueType::Bool;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ValueType {
     Bool,
     Nil,
@@ -59,4 +60,15 @@ pub fn number_val(number: f64) -> Value {
             number
         }
     }
+}
+
+pub static NIL_VAL: Value = Value {
+    value_type: ValueType::Nil,
+    read_as: ValueData {
+        number: 0.0,
+    }
+};
+
+pub fn bool_val(boolean: bool) -> Value {
+    Value { value_type: ValueType::Bool, read_as: ValueData { boolean: boolean } }
 }

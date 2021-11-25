@@ -1,6 +1,6 @@
-use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE, init_chunk};
+use crate::chunk::{Chunk, OP_RETURN, OP_CONSTANT, OP_NEGATE, OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE, init_chunk, OP_NIL, OP_TRUE, OP_FALSE, OP_NOT, OP_EQUAL, OP_GREATER, OP_LESS};
 use crate::compiler::Compiler;
-use crate::value::{as_number, number_val, print_value, Value, ValueData, ValueType};
+use crate::value::{as_bool, as_number, bool_val, NIL_VAL, number_val, print_value, Value, ValueData, ValueType};
 use crate::debug::disassemble_instruction;
 
 pub const DEBUG_TRACE_EXECUTION: bool = true;
@@ -61,6 +61,25 @@ fn run(vm: VM) -> InterpretResult {
             stack.push(constant);
         }
 
+        if instruction == OP_NIL { stack.push(NIL_VAL); }
+        if instruction == OP_TRUE { stack.push(bool_val(true)); }
+        if instruction == OP_FALSE { stack.push(bool_val(false)); }
+        if instruction == OP_EQUAL {
+            let b = stack.pop().unwrap();
+            let a = stack.pop().unwrap();
+            stack.push(bool_val(values_equal(a, b)));
+        }
+        if instruction == OP_GREATER {
+            let b = stack.pop().unwrap();
+            let a = stack.pop().unwrap();
+            stack.push(bool_val(as_number(&a) > as_number(&b)));
+        }
+        if instruction == OP_LESS {
+            let b = stack.pop().unwrap();
+            let a = stack.pop().unwrap();
+            stack.push(bool_val(as_number(&a) < as_number(&b)));
+        }
+
         // TODO: Not idiomatic way of skipping if no match
         let none = |_a: f64, _b: f64| 0.0;
         let op_fn = match instruction {
@@ -76,6 +95,11 @@ fn run(vm: VM) -> InterpretResult {
             if r.1 == INTERPRET_RUNTIME_ERROR {
                 return r.1;
             }
+        }
+
+        else if instruction == OP_NOT {
+            let value = stack.pop().unwrap();
+            stack.push(bool_val(is_falsy(&value)))
         }
 
         else if instruction == OP_NEGATE {
@@ -99,4 +123,17 @@ fn run(vm: VM) -> InterpretResult {
         inst_idx += 1;
     }
     return INTERPRET_RUNTIME_ERROR;
+}
+
+fn is_falsy(value: &Value) -> bool {
+    value.value_type == ValueType::Nil || (value.value_type == ValueType::Bool && !as_bool(&value))
+}
+
+fn values_equal(a: Value, b: Value) -> bool {
+    if a.value_type != b.value_type { return false; }
+    match a.value_type {
+        ValueType::Bool => as_bool(&a) == as_bool(&b),
+        ValueType::Nil => true,
+        ValueType::Number => as_number(&a) == as_number(&b),
+    }
 }

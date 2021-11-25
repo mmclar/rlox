@@ -24,31 +24,31 @@ impl Parser {
             (TokenType::Semicolon, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::Slash, rule(Compiler::nil,Compiler::binary, PREC_FACTOR)),
             (TokenType::Star, rule(Compiler::nil, Compiler::binary, PREC_FACTOR)),
-            (TokenType::Bang, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
-            (TokenType::BangEqual, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
+            (TokenType::Bang, rule(Compiler::unary, Compiler::nil, PREC_NONE)),
+            (TokenType::BangEqual, rule(Compiler::nil, Compiler::binary, PREC_EQUALITY)),
             (TokenType::Equal, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
-            (TokenType::EqualEqual, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
-            (TokenType::Greater, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
-            (TokenType::GreaterEqual, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
-            (TokenType::Less, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
-            (TokenType::LessEqual, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
+            (TokenType::EqualEqual, rule(Compiler::nil, Compiler::binary, PREC_EQUALITY)),
+            (TokenType::Greater, rule(Compiler::nil, Compiler::binary, PREC_COMPARISON)),
+            (TokenType::GreaterEqual, rule(Compiler::nil, Compiler::binary, PREC_COMPARISON)),
+            (TokenType::Less, rule(Compiler::nil, Compiler::binary, PREC_COMPARISON)),
+            (TokenType::LessEqual, rule(Compiler::nil, Compiler::binary, PREC_COMPARISON)),
             (TokenType::Identifier, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::String, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::Number, rule(Compiler::number, Compiler::nil, PREC_NONE)),
             (TokenType::And, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::Class, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::Else, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
-            (TokenType::False, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
+            (TokenType::False, rule(Compiler::literal, Compiler::nil, PREC_NONE)),
             (TokenType::For, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::Fun, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::If, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
-            (TokenType::Nil, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
+            (TokenType::Nil, rule(Compiler::literal, Compiler::nil, PREC_NONE)),
             (TokenType::Or, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::Print, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::Return, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::Super, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::This, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
-            (TokenType::True, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
+            (TokenType::True, rule(Compiler::literal, Compiler::nil, PREC_NONE)),
             (TokenType::Var, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::While, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::Error, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
@@ -65,9 +65,7 @@ impl Parser {
     }
 
     pub fn get_rule(&self, token_type: TokenType) -> &ParseRule {
-        let r = self.rules.get(&token_type).unwrap();
-        println!("r");
-        r
+        self.rules.get(&token_type).unwrap()
     }
 }
 
