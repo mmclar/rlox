@@ -13,6 +13,7 @@ mod debug;
 mod vm;
 mod compiler;
 mod scanner;
+mod parser;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

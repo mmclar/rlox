@@ -234,7 +234,7 @@ pub struct Token {
     // pub message: str,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Hash, Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TokenType {
     // Single-character tokens.
     LeftParen, RightParen,
@@ -267,3 +267,14 @@ fn cmp(a: &Vec<char>, a_start: usize, length: usize, b: String) -> bool {
     }
     true
 }
+
+pub fn make_empty_token() -> Token {
+    Token {
+        token_type: TokenType::Empty,
+        start: 0,
+        length: 0,
+        line: 0,
+        // message: "A token about nothing".to_string(),
+    }
+}
+
