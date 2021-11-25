@@ -35,7 +35,7 @@ fn repl() {
         io::stdout().flush().unwrap();
         let mut line = String::new();
         match io::stdin().read_line(&mut line) {
-            Ok(_) => { print!("{}", line); }
+            Ok(_) => { interpret(line); },
             Err(_) => {},
         }
     }
