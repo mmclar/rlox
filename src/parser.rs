@@ -33,7 +33,7 @@ impl Parser {
             (TokenType::Less, rule(Compiler::nil, Compiler::binary, PREC_COMPARISON)),
             (TokenType::LessEqual, rule(Compiler::nil, Compiler::binary, PREC_COMPARISON)),
             (TokenType::Identifier, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
-            (TokenType::String, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
+            (TokenType::String, rule(Compiler::string, Compiler::nil, PREC_NONE)),
             (TokenType::Number, rule(Compiler::number, Compiler::nil, PREC_NONE)),
             (TokenType::And, rule(Compiler::nil, Compiler::nil, PREC_NONE)),
             (TokenType::Class, rule(Compiler::nil, Compiler::nil, PREC_NONE)),

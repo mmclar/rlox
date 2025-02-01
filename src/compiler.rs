@@ -154,6 +154,10 @@ impl Compiler {
         self.emit_constant(number_val(number));
     }
 
+    pub fn string(&mut self) {
+        self.emit_constant(number_val(10.0));
+    }
+
     pub fn unary(&mut self) {
         let operator_type = self.parser.previous.token_type;
         self.parse_precedence(PREC_UNARY);

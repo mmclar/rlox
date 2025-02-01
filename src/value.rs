@@ -1,17 +1,20 @@
 use std::fmt;
 use crate::value::ValueType::Bool;
+use crate::value::ValueType::Obj;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ValueType {
     Bool,
     Nil,
     Number,
+    Obj,
 }
 
 #[derive(Clone, Copy)]
 pub union ValueData {
     pub boolean: bool,
     pub number: f64,
+    pub obj: ValueType,
 }
 
 #[derive(Clone, Copy)]
@@ -35,6 +38,7 @@ impl Value {
             ValueType::Bool => if as_bool(&self) { return "true".to_string(); } else { return "false".to_string(); },
             ValueType::Nil => "nil".to_string(),
             ValueType::Number => format!("{}", as_number(&self)),
+            ValueType::Obj => "string".to_string(),
         }
     }
 }
@@ -63,6 +67,15 @@ pub fn number_val(number: f64) -> Value {
         }
     }
 }
+//
+// pub fn string_val(string: str) -> Value {
+//     Value {
+//         value_type: ValueType::Obj,
+//         read_as: ValueData {
+//             number
+//         }
+//     }
+// }
 
 pub static NIL_VAL: Value = Value {
     value_type: ValueType::Nil,

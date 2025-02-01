@@ -135,5 +135,6 @@ fn values_equal(a: Value, b: Value) -> bool {
         ValueType::Bool => as_bool(&a) == as_bool(&b),
         ValueType::Nil => true,
         ValueType::Number => as_number(&a) == as_number(&b),
+        ValueType::Obj => true,
     }
 }
